@@ -70,9 +70,9 @@ export default function Discounted({ sortBy, priceRange, user }) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Discounted Products</h1>
+      {/* <h1 className="text-3xl font-bold mb-6 text-center">Discounted Products</h1> */}
 
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mt-18 mb-10">
         <div className="relative w-full max-w-lg">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input

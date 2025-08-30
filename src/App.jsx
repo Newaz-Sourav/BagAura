@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,6 +22,7 @@ function AppWrapper() {
 }
 
 function App() {
+  const location = useLocation();
   const [sortBy, setSortBy] = useState("newest");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -30,7 +31,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
 
-  // --- LIFTED CART STATE ---
   const [cart, setCart] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
 
@@ -52,7 +52,7 @@ function App() {
     fetchUser();
   }, []);
 
-  // Fetch cart when user changes
+  // Fetch cart
   useEffect(() => {
     const fetchCart = async () => {
       if (!user) {
@@ -60,7 +60,6 @@ function App() {
         setCartTotal(0);
         return;
       }
-
       try {
         const res = await axios.get(
           "https://ecommerce-backend-ccc8.onrender.com/user/cart",
@@ -102,23 +101,47 @@ function App() {
         draggable
         pauseOnHover
       />
+
+      {/* Sidebar */}
+      <Sidebar
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        isOpen={isSidebarOpen}
+        onClose={closeAll}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+      />
+
+      {/* Floating sidebar button for home, categories, discount pages */}
+      {["/", "/categories", "/discount"].includes(location.pathname) &&
+        !isSidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-3 rounded-r-full shadow-lg z-[75] hover:bg-blue-700 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
+
       <div className="flex">
-        <Sidebar
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          isOpen={isSidebarOpen}
-          onClose={closeAll}
-          priceRange={priceRange}
-          setPriceRange={setPriceRange}
-        />
         <div className="flex-1 md:ml-64">
           <Navbar
             isOpen={isNavbarOpen}
             toggleNavbar={toggleNavbar}
+            toggleSidebar={toggleSidebar}
             user={user}
             setUser={setUser}
-            cart={cart} // pass cart to Navbar, but badge removed in Navbar component
           />
+
           <Routes>
             <Route
               path="/"

@@ -15,7 +15,6 @@ export default function Sidebar({ sortBy, setSortBy, isOpen, onClose, priceRange
     const newRange = [...localRange];
     newRange[index] = Number(value);
 
-    // Prevent handles from crossing
     if (index === 0 && newRange[0] > newRange[1]) newRange[0] = newRange[1];
     if (index === 1 && newRange[1] < newRange[0]) newRange[1] = newRange[0];
 
@@ -77,20 +76,13 @@ export default function Sidebar({ sortBy, setSortBy, isOpen, onClose, priceRange
         {/* Price Range */}
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-3 text-gray-800">Price Range</h2>
-
-          {/* Labels */}
           <div className="flex justify-between text-sm mb-2 font-medium text-gray-700">
             <span>Min: ৳{localRange[0]}</span>
             <span>To</span>
             <span>Max: ৳{localRange[1]}</span>
           </div>
-
-          {/* Slider */}
           <div className="relative h-6">
-            {/* Track */}
             <div className="absolute w-full h-2 bg-gray-200 rounded top-1/2 -translate-y-1/2"></div>
-
-            {/* Selected range */}
             <div
               className="absolute h-2 bg-blue-500 rounded top-1/2 -translate-y-1/2"
               style={{
@@ -98,8 +90,6 @@ export default function Sidebar({ sortBy, setSortBy, isOpen, onClose, priceRange
                 width: `${((localRange[1] - localRange[0]) / max) * 100}%`,
               }}
             />
-
-            {/* Min slider */}
             <input
               type="range"
               min={min}
@@ -108,8 +98,6 @@ export default function Sidebar({ sortBy, setSortBy, isOpen, onClose, priceRange
               onChange={(e) => handleRangeChange(e.target.value, 0)}
               className="absolute w-full h-6 appearance-none bg-transparent pointer-events-auto z-20"
             />
-
-            {/* Max slider */}
             <input
               type="range"
               min={min}
