@@ -74,7 +74,7 @@ export default function Sidebar({ sortBy, setSortBy, isOpen, onClose, priceRange
         </div>
 
         {/* Price Range */}
-        <div className="mt-6">
+        <div className="mt-6 sm:mt-4">
           <h2 className="text-lg font-semibold mb-3 text-gray-800">Price Range</h2>
           <div className="flex justify-between text-sm mb-2 font-medium text-gray-700">
             <span>Min: ৳{localRange[0]}</span>

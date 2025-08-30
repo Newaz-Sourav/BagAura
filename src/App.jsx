@@ -117,7 +117,7 @@ function App() {
         !isSidebarOpen && (
           <button
             onClick={toggleSidebar}
-            className="fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-3 rounded-r-full shadow-lg z-[75] hover:bg-blue-700 transition"
+            className="fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-3 rounded-r-full shadow-lg z-[75] hover:bg-blue-700 transition md:hidden"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
