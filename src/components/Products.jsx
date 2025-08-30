@@ -46,11 +46,7 @@ export default function Products({ sortBy, priceRange, user }) {
   };
 
   if (loading)
-    return (
-      <div className="text-center mt-20 text-lg font-medium">
-        Loading products...
-      </div>
-    );
+    return <div className="text-center mt-20 text-lg font-medium">Loading products...</div>;
 
   let filteredProducts = products
     .filter((product) =>
@@ -58,18 +54,12 @@ export default function Products({ sortBy, priceRange, user }) {
     )
     .filter((product) => product.price >= priceRange[0] && product.price <= priceRange[1]);
 
-  if (sortBy === "price-low-high")
-    filteredProducts.sort((a, b) => a.price - b.price);
-  if (sortBy === "price-high-low")
-    filteredProducts.sort((a, b) => b.price - a.price);
-  if (sortBy === "newest")
-    filteredProducts.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
+  if (sortBy === "price-low-high") filteredProducts.sort((a, b) => a.price - b.price);
+  if (sortBy === "price-high-low") filteredProducts.sort((a, b) => b.price - a.price);
+  if (sortBy === "newest") filteredProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <div className="container mx-auto p-4">
-      {/* Search */}
       <div className="flex justify-center mt-18 mb-10">
         <div className="relative w-full max-w-lg">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -83,7 +73,6 @@ export default function Products({ sortBy, priceRange, user }) {
         </div>
       </div>
 
-      {/* Products Grid */}
       <div
         className="grid gap-6 justify-center"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
@@ -100,9 +89,7 @@ export default function Products({ sortBy, priceRange, user }) {
                 style={{ backgroundColor: product.bgcolor, height: "70%" }}
               >
                 <img
-                  src={
-                    product.image ? `data:image/jpeg;base64,${product.image}` : ""
-                  }
+                  src={product.image ? `data:image/jpeg;base64,${product.image}` : ""}
                   alt={product.name}
                   className="w-44 h-44 object-contain rounded-md"
                 />
@@ -115,30 +102,19 @@ export default function Products({ sortBy, priceRange, user }) {
                   height: "30%",
                 }}
               >
-                <h2 className="text-sm font-semibold truncate">
-                  {product.name || "Product"}
-                </h2>
+                <h2 className="text-sm font-semibold truncate">{product.name || "Product"}</h2>
                 <p className="text-sm font-medium mt-1">
                   {product.discount ? (
                     <div className="flex items-center gap-2">
-                      <span
-                        className="line-through"
-                        style={{ color: product.textcolor }}
-                      >
+                      <span className="line-through" style={{ color: product.textcolor }}>
                         {(product.price + product.discount).toFixed(2)}
                       </span>
-                      <span
-                        className="text-sm font-bold"
-                        style={{ color: product.textcolor }}
-                      >
+                      <span className="text-sm font-bold" style={{ color: product.textcolor }}>
                         {product.price.toFixed(2)}
                       </span>
                     </div>
                   ) : (
-                    <span
-                      className="text-sm font-bold"
-                      style={{ color: product.textcolor }}
-                    >
+                    <span className="text-sm font-bold" style={{ color: product.textcolor }}>
                       {product.price.toFixed(2)}
                     </span>
                   )}
@@ -154,9 +130,7 @@ export default function Products({ sortBy, priceRange, user }) {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 col-span-full">
-            No products found.
-          </p>
+          <p className="text-center text-gray-500 col-span-full">No products found.</p>
         )}
       </div>
     </div>

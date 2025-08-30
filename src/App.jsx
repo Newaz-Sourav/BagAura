@@ -55,7 +55,11 @@ function App() {
   // Fetch cart when user changes
   useEffect(() => {
     const fetchCart = async () => {
-      if (!user) return;
+      if (!user) {
+        setCart([]);
+        setCartTotal(0);
+        return;
+      }
 
       try {
         const res = await axios.get(
@@ -113,7 +117,7 @@ function App() {
             toggleNavbar={toggleNavbar}
             user={user}
             setUser={setUser}
-            cart={cart}   // pass cart to Navbar
+            cart={cart} // pass cart to Navbar, but badge removed in Navbar component
           />
           <Routes>
             <Route

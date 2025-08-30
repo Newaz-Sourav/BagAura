@@ -3,9 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function Navbar({ isOpen, toggleNavbar, user, setUser, cart }) {
+export default function Navbar({ isOpen, toggleNavbar, user, setUser }) {
   const navigate = useNavigate();
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = async () => {
     try {
@@ -39,14 +38,9 @@ export default function Navbar({ isOpen, toggleNavbar, user, setUser, cart }) {
                 navigate("/cart");
               }
             }}
-            className="relative text-gray-700 hover:text-blue-600 transition font-medium"
+            className="text-gray-700 hover:text-blue-600 transition font-medium"
           >
             Cart
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                {cartCount}
-              </span>
-            )}
           </button>
 
           {user ? (

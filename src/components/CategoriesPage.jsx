@@ -73,7 +73,10 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
   const scroll = (cat, dir) => {
     const ref = scrollRefs.current[cat];
     if (ref && ref.current) {
-      ref.current.scrollBy({ left: dir === "left" ? -300 : 300, behavior: "smooth" });
+      ref.current.scrollBy({
+        left: dir === "left" ? -300 : 300,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -88,7 +91,9 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
             placeholder="Search products by name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm sm:text-base"
+            className="w-full pl-10 pr-4 py-3 rounded-full border border-gray-300 shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                       transition-all duration-200 text-sm sm:text-base"
           />
         </div>
       </div>
@@ -102,7 +107,8 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
           <div className="hidden md:block relative">
             <button
               onClick={() => scroll(cat, "left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
+                         bg-white p-2 rounded-full shadow hover:bg-gray-100"
             >
               <ChevronLeft />
             </button>
@@ -114,7 +120,8 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
               {categories[cat].map((product) => (
                 <div
                   key={product._id}
-                  className="relative rounded-xl overflow-hidden shadow-lg w-64 flex-shrink-0 transition-transform hover:scale-105"
+                  className="relative rounded-xl overflow-hidden shadow-lg w-64 flex-shrink-0 
+                             transition-transform hover:scale-105"
                   style={{ height: "320px" }}
                 >
                   <div
@@ -127,6 +134,7 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
                       className="w-44 h-44 object-contain rounded-md"
                     />
                   </div>
+
                   <div
                     className="relative flex flex-col justify-center p-3 rounded-b-xl"
                     style={{
@@ -135,7 +143,9 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
                       height: "30%",
                     }}
                   >
-                    <h2 className="text-sm font-semibold truncate">{product.name || "Product"}</h2>
+                    <h2 className="text-sm font-semibold truncate">
+                      {product.name || "Product"}
+                    </h2>
                     <p className="text-sm font-medium mt-1">
                       {product.discount ? (
                         <div className="flex items-center gap-2">
@@ -152,9 +162,12 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
                         </span>
                       )}
                     </p>
+
                     <div
                       onClick={() => handleAddToCart(product._id)}
-                      className="absolute -top-4 right-3 w-10 h-10 flex justify-center items-center rounded-full text-lg font-bold shadow-md transition-transform hover:scale-110 cursor-pointer"
+                      className="absolute -top-4 right-3 w-10 h-10 flex justify-center items-center 
+                                 rounded-full text-lg font-bold shadow-md transition-transform 
+                                 hover:scale-110 cursor-pointer"
                       style={{ backgroundColor: product.textcolor, color: product.panelcolor }}
                     >
                       +
@@ -166,7 +179,8 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
 
             <button
               onClick={() => scroll(cat, "right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
+                         bg-white p-2 rounded-full shadow hover:bg-gray-100"
             >
               <ChevronRight />
             </button>
@@ -186,24 +200,36 @@ export default function CategoriesPage({ sortBy, priceRange, user }) {
                     className="w-20 h-20 object-contain rounded-md"
                   />
                 </div>
+
                 <div
                   className="flex-1 p-3 relative"
                   style={{ backgroundColor: product.panelcolor, color: product.textcolor }}
                 >
-                  <h2 className="text-sm font-semibold truncate">{product.name || "Product"}</h2>
+                  <h2 className="text-sm font-semibold truncate">
+                    {product.name || "Product"}
+                  </h2>
                   <p className="text-sm font-medium mt-1">
                     {product.discount ? (
                       <div className="flex items-center gap-2">
-                        <span className="line-through">{(product.price + product.discount).toFixed(2)}</span>
-                        <span className="text-sm font-bold">{product.price.toFixed(2)}</span>
+                        <span className="line-through">
+                          {(product.price + product.discount).toFixed(2)}
+                        </span>
+                        <span className="text-sm font-bold">
+                          {product.price.toFixed(2)}
+                        </span>
                       </div>
                     ) : (
-                      <span className="text-sm font-bold">{product.price.toFixed(2)}</span>
+                      <span className="text-sm font-bold">
+                        {product.price.toFixed(2)}
+                      </span>
                     )}
                   </p>
+
                   <div
                     onClick={() => handleAddToCart(product._id)}
-                    className="absolute top-2 right-2 w-8 h-8 flex justify-center items-center rounded-full text-lg font-bold shadow-md transition-transform hover:scale-110 cursor-pointer"
+                    className="absolute top-2 right-2 w-8 h-8 flex justify-center items-center 
+                               rounded-full text-lg font-bold shadow-md transition-transform 
+                               hover:scale-110 cursor-pointer"
                     style={{ backgroundColor: product.textcolor, color: product.panelcolor }}
                   >
                     +

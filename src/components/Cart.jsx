@@ -3,9 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-export default function Cart({ user, userLoading }) {
-  const [cart, setCart] = useState([]);
-  const [cartTotal, setCartTotal] = useState(0);
+export default function Cart({ user, userLoading, cart, setCart, cartTotal, setCartTotal }) {
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
   const navigate = useNavigate();
@@ -19,9 +17,12 @@ export default function Cart({ user, userLoading }) {
     }
   }, [user, userLoading, navigate]);
 
-  // Fetch cart
   const fetchCart = async () => {
-    if (!user) return;
+    if (!user) {
+      setCart([]);
+      setCartTotal(0);
+      return;
+    }
 
     try {
       const res = await axios.get(
@@ -42,8 +43,9 @@ export default function Cart({ user, userLoading }) {
     if (user) fetchCart();
   }, [user]);
 
-  // ---- ORDER NOW FUNCTION ----
-  async function handlePlaceOrder() {
+  const handlePlaceOrder = async () => {
+    if (!user) return;
+
     try {
       setPlacingOrder(true);
       const res = await axios.post(
@@ -51,15 +53,17 @@ export default function Cart({ user, userLoading }) {
         {
           name: user.fullname,
           email: user.email,
-          location: "Dhaka", // you can replace this with user input (address form)
-          phone: user.contact || 123456789, // fallback if no phone in user
+          location: "Dhaka",
+          phone: user.contact || 123456789,
         },
         { withCredentials: true }
       );
 
       toast.success("Order placed successfully!", { autoClose: 2000, position: "top-center" });
-      setCart([]); // clear frontend cart
-      setCartTotal(0);
+
+      // Fetch updated cart after order (cart should be empty now)
+      await fetchCart();
+
       console.log("Order Response:", res.data);
     } catch (err) {
       console.error("Order failed:", err);
@@ -67,23 +71,19 @@ export default function Cart({ user, userLoading }) {
     } finally {
       setPlacingOrder(false);
     }
-  }
+  };
 
   if (userLoading) return <div className="text-center mt-20 text-lg font-medium">Checking login...</div>;
   if (!user) return null;
   if (loading) return <div className="text-center mt-20 text-lg font-medium">Loading cart...</div>;
-  if (cart.length === 0) return <div className="text-center mt-20 text-lg font-medium">Your cart is empty.</div>;
+  if (!cart || cart.length === 0) return <div className="text-center mt-20 text-lg font-medium">Your cart is empty.</div>;
 
   return (
     <div className="container mx-auto p-4 mt-20">
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
       <div className="flex flex-col gap-4">
         {cart.map((item) => (
-          <div
-            key={item._id}
-            className="flex items-center gap-4 p-4 rounded-xl shadow-md relative"
-          >
-            {/* Cross button */}
+          <div key={item._id} className="flex items-center gap-4 p-4 rounded-xl shadow-md relative">
             <button
               onClick={() => handleRemoveCompletely(item._id)}
               className="absolute top-2 right-2 text-gray-500 hover:text-red-600"
@@ -124,12 +124,8 @@ export default function Cart({ user, userLoading }) {
           </div>
         ))}
 
-        {/* Cart total */}
-        <div className="mt-6 text-right text-xl font-bold">
-          Total: ৳{cartTotal.toFixed(2)}
-        </div>
+        <div className="mt-6 text-right text-xl font-bold">Total: ৳{cartTotal.toFixed(2)}</div>
 
-        {/* ---- ORDER NOW BUTTON ---- */}
         <div className="mt-6 flex justify-end">
           <button
             onClick={handlePlaceOrder}
@@ -143,7 +139,6 @@ export default function Cart({ user, userLoading }) {
     </div>
   );
 
-  // Helper functions
   async function handleIncrease(productId) {
     try {
       await axios.post(
@@ -151,7 +146,7 @@ export default function Cart({ user, userLoading }) {
         {},
         { withCredentials: true }
       );
-      fetchCart();
+      await fetchCart();
     } catch (err) {
       console.error(err);
     }
@@ -164,7 +159,7 @@ export default function Cart({ user, userLoading }) {
         {},
         { withCredentials: true }
       );
-      fetchCart();
+      await fetchCart();
     } catch (err) {
       console.error(err);
     }
@@ -178,7 +173,7 @@ export default function Cart({ user, userLoading }) {
         { withCredentials: true }
       );
       toast.success("Item removed from cart", { autoClose: 1500, position: "top-center" });
-      fetchCart();
+      await fetchCart();
     } catch (err) {
       console.error(err);
       toast.error("Failed to remove item", { autoClose: 2000, position: "top-center" });
