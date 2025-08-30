@@ -8,6 +8,7 @@ export default function Products({ sortBy, priceRange, user }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [addingToCart, setAddingToCart] = useState({}); // Track loading per product
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +33,11 @@ export default function Products({ sortBy, priceRange, user }) {
       navigate("/login");
       return;
     }
+
+    if (addingToCart[productId]) return; // Prevent multiple clicks
+
     try {
+      setAddingToCart((prev) => ({ ...prev, [productId]: true }));
       await axios.post(
         `https://ecommerce-backend-ccc8.onrender.com/user/addtocart/${productId}`,
         {},
@@ -42,21 +47,35 @@ export default function Products({ sortBy, priceRange, user }) {
     } catch (err) {
       toast.error("Failed to add product");
       console.error(err);
+    } finally {
+      setAddingToCart((prev) => ({ ...prev, [productId]: false }));
     }
   };
 
   if (loading)
-    return <div className="text-center mt-20 text-lg font-medium">Loading products...</div>;
+    return (
+      <div className="text-center mt-20 text-lg font-medium">
+        Loading products...
+      </div>
+    );
 
   let filteredProducts = products
     .filter((product) =>
       product.name?.toLowerCase().includes(search.toLowerCase())
     )
-    .filter((product) => product.price >= priceRange[0] && product.price <= priceRange[1]);
+    .filter(
+      (product) =>
+        product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
 
-  if (sortBy === "price-low-high") filteredProducts.sort((a, b) => a.price - b.price);
-  if (sortBy === "price-high-low") filteredProducts.sort((a, b) => b.price - a.price);
-  if (sortBy === "newest") filteredProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (sortBy === "price-low-high")
+    filteredProducts.sort((a, b) => a.price - b.price);
+  if (sortBy === "price-high-low")
+    filteredProducts.sort((a, b) => b.price - a.price);
+  if (sortBy === "newest")
+    filteredProducts.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
   return (
     <div className="container mx-auto p-4">
@@ -89,7 +108,11 @@ export default function Products({ sortBy, priceRange, user }) {
                 style={{ backgroundColor: product.bgcolor, height: "70%" }}
               >
                 <img
-                  src={product.image ? `data:image/jpeg;base64,${product.image}` : ""}
+                  src={
+                    product.image
+                      ? `data:image/jpeg;base64,${product.image}`
+                      : ""
+                  }
                   alt={product.name}
                   className="w-44 h-44 object-contain rounded-md"
                 />
@@ -102,27 +125,43 @@ export default function Products({ sortBy, priceRange, user }) {
                   height: "30%",
                 }}
               >
-                <h2 className="text-sm font-semibold truncate">{product.name || "Product"}</h2>
+                <h2 className="text-sm font-semibold truncate">
+                  {product.name || "Product"}
+                </h2>
                 <p className="text-sm font-medium mt-1">
                   {product.discount ? (
                     <div className="flex items-center gap-2">
-                      <span className="line-through" style={{ color: product.textcolor }}>
+                      <span
+                        className="line-through"
+                        style={{ color: product.textcolor }}
+                      >
                         {(product.price + product.discount).toFixed(2)}
                       </span>
-                      <span className="text-sm font-bold" style={{ color: product.textcolor }}>
+                      <span
+                        className="text-sm font-bold"
+                        style={{ color: product.textcolor }}
+                      >
                         {product.price.toFixed(2)}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-sm font-bold" style={{ color: product.textcolor }}>
+                    <span
+                      className="text-sm font-bold"
+                      style={{ color: product.textcolor }}
+                    >
                       {product.price.toFixed(2)}
                     </span>
                   )}
                 </p>
                 <div
                   onClick={() => handleAddToCart(product._id)}
-                  className="absolute -top-4 right-3 w-10 h-10 flex justify-center items-center rounded-full text-lg font-bold shadow-md transition-transform hover:scale-110 cursor-pointer"
-                  style={{ backgroundColor: product.textcolor, color: product.panelcolor }}
+                  className={`absolute -top-4 right-3 w-10 h-10 flex justify-center items-center rounded-full text-lg font-bold shadow-md transition-transform hover:scale-110 cursor-pointer ${
+                    addingToCart[product._id] ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  style={{
+                    backgroundColor: product.textcolor,
+                    color: product.panelcolor,
+                  }}
                 >
                   +
                 </div>
@@ -130,7 +169,9 @@ export default function Products({ sortBy, priceRange, user }) {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 col-span-full">No products found.</p>
+          <p className="text-center text-gray-500 col-span-full">
+            No products found.
+          </p>
         )}
       </div>
     </div>

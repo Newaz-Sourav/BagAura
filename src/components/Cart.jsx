@@ -8,7 +8,7 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
   const [placingOrder, setPlacingOrder] = useState(false);
   const navigate = useNavigate();
 
-  // Redirect only when user check is finished
+  // Redirect if not logged in
   useEffect(() => {
     if (!userLoading && !user) {
       toast.error("You must login first!", { autoClose: 2000, position: "top-center" });
@@ -17,12 +17,9 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
     }
   }, [user, userLoading, navigate]);
 
+  // Fetch cart from backend
   const fetchCart = async () => {
-    if (!user) {
-      setCart([]);
-      setCartTotal(0);
-      return;
-    }
+    if (!user) return;
 
     try {
       const res = await axios.get(
@@ -48,7 +45,7 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
 
     try {
       setPlacingOrder(true);
-      const res = await axios.post(
+      await axios.post(
         "https://ecommerce-backend-ccc8.onrender.com/order/placeorder",
         {
           name: user.fullname,
@@ -60,16 +57,56 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
       );
 
       toast.success("Order placed successfully!", { autoClose: 2000, position: "top-center" });
-
-      // Fetch updated cart after order (cart should be empty now)
       await fetchCart();
-
-      console.log("Order Response:", res.data);
     } catch (err) {
       console.error("Order failed:", err);
       toast.error("Failed to place order", { autoClose: 2000, position: "top-center" });
     } finally {
       setPlacingOrder(false);
+    }
+  };
+
+  // Increase quantity
+  const handleIncrease = async (productId) => {
+    try {
+      await axios.post(
+        `https://ecommerce-backend-ccc8.onrender.com/user/addtocart/${productId}`,
+        {},
+        { withCredentials: true }
+      );
+      await fetchCart();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Decrease quantity
+  const handleDecrease = async (productId) => {
+    try {
+      await axios.post(
+        `https://ecommerce-backend-ccc8.onrender.com/user/removefromcart/${productId}`,
+        {},
+        { withCredentials: true }
+      );
+      await fetchCart();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Remove completely
+  const handleRemoveCompletely = async (productId) => {
+    try {
+      await axios.post(
+        `https://ecommerce-backend-ccc8.onrender.com/user/removefromcart/${productId}`,
+        { removeCompletely: true },
+        { withCredentials: true }
+      );
+      toast.success("Item removed from cart", { autoClose: 1500, position: "top-center" });
+      await fetchCart();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to remove item", { autoClose: 2000, position: "top-center" });
     }
   };
 
@@ -138,45 +175,4 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
       </div>
     </div>
   );
-
-  async function handleIncrease(productId) {
-    try {
-      await axios.post(
-        `https://ecommerce-backend-ccc8.onrender.com/user/addtocart/${productId}`,
-        {},
-        { withCredentials: true }
-      );
-      await fetchCart();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function handleDecrease(productId) {
-    try {
-      await axios.post(
-        `https://ecommerce-backend-ccc8.onrender.com/user/removefromcart/${productId}`,
-        {},
-        { withCredentials: true }
-      );
-      await fetchCart();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function handleRemoveCompletely(productId) {
-    try {
-      await axios.post(
-        `https://ecommerce-backend-ccc8.onrender.com/user/removefromcart/${productId}`,
-        { removeCompletely: true },
-        { withCredentials: true }
-      );
-      toast.success("Item removed from cart", { autoClose: 1500, position: "top-center" });
-      await fetchCart();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to remove item", { autoClose: 2000, position: "top-center" });
-    }
-  }
 }
