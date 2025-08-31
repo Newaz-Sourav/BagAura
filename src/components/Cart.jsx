@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CheckoutModal from "../components/CheckoutModal"; // import the modal
 
 export default function Cart({ user, userLoading, cart, setCart, cartTotal, setCartTotal }) {
   const [loading, setLoading] = useState(true);
-  const [placingOrder, setPlacingOrder] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false); // modal open state
   const navigate = useNavigate();
 
   // Redirect if not logged in
@@ -39,32 +40,6 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
   useEffect(() => {
     if (user) fetchCart();
   }, [user]);
-
-  const handlePlaceOrder = async () => {
-    if (!user) return;
-
-    try {
-      setPlacingOrder(true);
-      await axios.post(
-        "https://ecommerce-backend-ccc8.onrender.com/order/placeorder",
-        {
-          name: user.fullname,
-          email: user.email,
-          location: "Dhaka",
-          phone: user.contact || 123456789,
-        },
-        { withCredentials: true }
-      );
-
-      toast.success("Order placed successfully!", { autoClose: 2000, position: "top-center" });
-      await fetchCart();
-    } catch (err) {
-      console.error("Order failed:", err);
-      toast.error("Failed to place order", { autoClose: 2000, position: "top-center" });
-    } finally {
-      setPlacingOrder(false);
-    }
-  };
 
   // Increase quantity
   const handleIncrease = async (productId) => {
@@ -108,6 +83,10 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
       console.error(err);
       toast.error("Failed to remove item", { autoClose: 2000, position: "top-center" });
     }
+  };
+
+  const handleOrderPlaced = async () => {
+    await fetchCart();
   };
 
   if (userLoading) return <div className="text-center mt-20 text-lg font-medium">Checking login...</div>;
@@ -165,14 +144,24 @@ export default function Cart({ user, userLoading, cart, setCart, cartTotal, setC
 
         <div className="mt-6 flex justify-end">
           <button
-            onClick={handlePlaceOrder}
-            disabled={placingOrder}
+            onClick={() => setCheckoutOpen(true)}
+            disabled={!cart || cart.length === 0}
             className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 disabled:opacity-50"
           >
-            {placingOrder ? "Placing Order..." : "Order Now"}
+            Order Now
           </button>
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        cart={cart}
+        cartTotal={cartTotal}
+        user={user}
+        onOrderPlaced={handleOrderPlaced}
+      />
     </div>
   );
 }
